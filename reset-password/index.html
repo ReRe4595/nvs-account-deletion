@@ -1,281 +1,125 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>NVS — Nouveau mot de passe</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at top, #242424 0%, #0d0d0d 45%, #050505 100%);
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 430px;
-      background: rgba(20,20,20,.96);
-      border: 1px solid #b8954b;
-      border-radius: 22px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-    }
-
-    .logo {
-      color: #d4af62;
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: 4px;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 24px;
-      margin: 10px 0 8px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #aaa;
-      margin-bottom: 28px;
-      line-height: 1.5;
-    }
-
-    label {
-      display: block;
-      margin: 16px 0 7px;
-      color: #ddd;
-    }
-
-    input {
-      width: 100%;
-      padding: 15px;
-      border-radius: 12px;
-      border: 1px solid #444;
-      background: #101010;
-      color: white;
-      font-size: 16px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #d4af62;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 24px;
-      padding: 15px;
-      border: 0;
-      border-radius: 12px;
-      background: #d4af62;
-      color: #111;
-      font-weight: 800;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .5;
-      cursor: wait;
-    }
-
-    #message {
-      display: none;
-      margin-top: 20px;
-      padding: 14px;
-      border-radius: 12px;
-      line-height: 1.45;
-    }
-
-    .error {
-      display: block !important;
-      background: #351616;
-      color: #ffb7b7;
-    }
-
-    .success {
-      display: block !important;
-      background: #15331f;
-      color: #b8f5c8;
-    }
-
-    .info {
-      display: block !important;
-      background: #262216;
-      color: #ead49a;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NVS — Nouveau mot de passe</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at top,#242424,#050505 65%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.card{width:100%;max-width:430px;background:#141414;border:1px solid #b8954b;border-radius:22px;padding:32px;box-shadow:0 20px 60px #0008}.logo{text-align:center;color:#d4af62;font-size:30px;font-weight:800;letter-spacing:4px}h1{text-align:center;font-size:24px}.subtitle{text-align:center;color:#aaa;line-height:1.5;margin-bottom:25px}label{display:block;margin:15px 0 7px;color:#ddd}input{width:100%;padding:15px;border-radius:12px;border:1px solid #444;background:#101010;color:#fff;font-size:16px}input:focus{outline:none;border-color:#d4af62}button{width:100%;margin-top:24px;padding:15px;border:0;border-radius:12px;background:#d4af62;color:#111;font-weight:800;font-size:16px;cursor:pointer}button:disabled{opacity:.5}#message{margin-top:20px;padding:14px;border-radius:12px;display:none;line-height:1.45}.info{display:block!important;background:#292313;color:#efd991}.error{display:block!important;background:#421919;color:#ffbaba}.success{display:block!important;background:#15331f;color:#b8f5c8}
+</style>
 </head>
-
 <body>
-
 <div class="card">
-  <div class="logo">NVS</div>
+<div class="logo">NVS</div>
+<h1>Nouveau mot de passe</h1>
+<div class="subtitle">Choisissez votre nouveau mot de passe pour votre compte NVS.</div>
 
-  <h1>Nouveau mot de passe</h1>
+<form id="form" style="display:none">
+<label>Nouveau mot de passe</label>
+<input id="password" type="password" minlength="6" autocomplete="new-password" required>
+<label>Confirmer le mot de passe</label>
+<input id="confirm" type="password" minlength="6" autocomplete="new-password" required>
+<button id="button" type="submit">Modifier mon mot de passe</button>
+</form>
 
-  <div class="subtitle">
-    Choisissez votre nouveau mot de passe pour votre compte NVS.
-  </div>
-
-  <form id="resetForm">
-    <label for="password">Nouveau mot de passe</label>
-    <input
-      id="password"
-      type="password"
-      minlength="6"
-      autocomplete="new-password"
-      required
-    >
-
-    <label for="confirmPassword">Confirmer le mot de passe</label>
-    <input
-      id="confirmPassword"
-      type="password"
-      minlength="6"
-      autocomplete="new-password"
-      required
-    >
-
-    <button id="submitButton" type="submit">
-      Modifier mon mot de passe
-    </button>
-  </form>
-
-  <div id="message"></div>
+<div id="message" class="info">Vérification du lien de récupération...</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-  const SUPABASE_URL =
-    'https://duiskszgsnmhxrqmtuhj.supabase.co';
+const url = "https:" + "//" + "duiskszgsnmhxrqmtuhj.supabase.co";
+const key = "sb_" + "publishable_eRg8dF6b075wUJSjBis1sg_CSQevnTB";
 
-  const SUPABASE_KEY =
-    'sb_publishable_eRg8dF6b075wUJSjBis1sg_CSQevnTB';
+const client = supabase.createClient(url,key,{
+  auth:{persistSession:true,detectSessionInUrl:true,flowType:"pkce"}
+});
 
-  const client = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY,
-    {
-      auth: {
-        detectSessionInUrl: true,
-        persistSession: true
+const form=document.getElementById("form");
+const msg=document.getElementById("message");
+const pass=document.getElementById("password");
+const confirmPass=document.getElementById("confirm");
+const button=document.getElementById("button");
+
+function message(text,type){
+  msg.textContent=text;
+  msg.className=type;
+}
+
+async function init(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const code=params.get("code");
+
+    if(code){
+      const {error}=await client.auth.exchangeCodeForSession(code);
+      if(error) throw error;
+
+      history.replaceState({},document.title,window.location.pathname);
+    }
+
+    if(window.location.hash){
+      const hash=new URLSearchParams(window.location.hash.substring(1));
+      const access_token=hash.get("access_token");
+      const refresh_token=hash.get("refresh_token");
+
+      if(access_token && refresh_token){
+        const {error}=await client.auth.setSession({
+          access_token,
+          refresh_token
+        });
+        if(error) throw error;
+
+        history.replaceState({},document.title,window.location.pathname);
       }
     }
-  );
 
-  const form = document.getElementById('resetForm');
-  const password = document.getElementById('password');
-  const confirmPassword =
-    document.getElementById('confirmPassword');
-  const button = document.getElementById('submitButton');
-  const message = document.getElementById('message');
+    const {data,error}=await client.auth.getSession();
+    if(error) throw error;
 
-  function showMessage(text, type) {
-    message.className = type;
-    message.textContent = text;
+    if(!data.session){
+      throw new Error("Aucune session de récupération.");
+    }
+
+    form.style.display="block";
+    message("Lien vérifié. Choisissez votre nouveau mot de passe.","info");
+
+  }catch(e){
+    form.style.display="none";
+    message("Lien invalide ou expiré. Demandez un nouveau lien depuis NVS.","error");
+  }
+}
+
+form.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+
+  if(pass.value.length<6){
+    message("Le mot de passe doit contenir au moins 6 caractères.","error");
+    return;
   }
 
-  async function checkRecoverySession() {
-    const {
-      data: { session }
-    } = await client.auth.getSession();
-
-    if (!session) {
-      showMessage(
-        "Ouvrez cette page depuis le lien reçu dans votre e-mail de récupération NVS.",
-        "info"
-      );
-    }
+  if(pass.value!==confirmPass.value){
+    message("Les deux mots de passe ne correspondent pas.","error");
+    return;
   }
 
-  client.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      showMessage(
-        "Lien vérifié. Vous pouvez choisir votre nouveau mot de passe.",
-        "info"
-      );
-    }
-  });
+  button.disabled=true;
+  button.textContent="Modification...";
 
-  checkRecoverySession();
+  const {error}=await client.auth.updateUser({password:pass.value});
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  if(error){
+    message("Impossible de modifier le mot de passe : "+error.message,"error");
+    button.disabled=false;
+    button.textContent="Modifier mon mot de passe";
+    return;
+  }
 
-    if (password.value.length < 6) {
-      showMessage(
-        "Le mot de passe doit contenir au moins 6 caractères.",
-        "error"
-      );
-      return;
-    }
+  await client.auth.signOut();
+  form.style.display="none";
+  message("Mot de passe modifié avec succès. Vous pouvez maintenant retourner dans NVS et vous connecter.","success");
+});
 
-    if (password.value !== confirmPassword.value) {
-      showMessage(
-        "Les deux mots de passe ne correspondent pas.",
-        "error"
-      );
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "Modification...";
-
-    const {
-      data: { session }
-    } = await client.auth.getSession();
-
-    if (!session) {
-      showMessage(
-        "Le lien de récupération est invalide ou a expiré. Demandez un nouveau lien depuis NVS.",
-        "error"
-      );
-
-      button.disabled = false;
-      button.textContent = "Modifier mon mot de passe";
-      return;
-    }
-
-    const { error } = await client.auth.updateUser({
-      password: password.value
-    });
-
-    if (error) {
-      showMessage(
-        "Impossible de modifier le mot de passe : " + error.message,
-        "error"
-      );
-
-      button.disabled = false;
-      button.textContent = "Modifier mon mot de passe";
-      return;
-    }
-
-    await client.auth.signOut();
-
-    form.style.display = "none";
-
-    showMessage(
-      "Mot de passe modifié avec succès. Vous pouvez maintenant retourner dans NVS et vous connecter avec votre nouveau mot de passe.",
-      "success"
-    );
-  });
+init();
 </script>
-
 </body>
 </html>
