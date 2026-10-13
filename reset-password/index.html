@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NVS — Nouveau mot de passe</title>
 <style>
@@ -31,7 +32,7 @@ const url = "https:" + "//" + "duiskszgsnmhxrqmtuhj.supabase.co";
 const key = "sb_" + "publishable_eRg8dF6b075wUJSjBis1sg_CSQevnTB";
 
 const client = supabase.createClient(url,key,{
-  auth:{persistSession:true,detectSessionInUrl:true,flowType:"pkce"}
+  auth:{persistSession:false,detectSessionInUrl:false,flowType:"pkce"}
 });
 
 const form=document.getElementById("form");
@@ -45,52 +46,46 @@ function message(text,type){
   msg.className=type;
 }
 
+let recoveryReady=false;
+
 async function init(){
+  const params=new URLSearchParams(window.location.search);
+  const hash=new URLSearchParams(window.location.hash.substring(1));
+  // Un seul traitement du lien, sans session préexistante ni jetons dans l'URL.
+  history.replaceState({},document.title,window.location.pathname);
   try{
-    const params=new URLSearchParams(window.location.search);
-    const code=params.get("code");
-
-    if(code){
-      const {error}=await client.auth.exchangeCodeForSession(code);
-      if(error) throw error;
-
-      history.replaceState({},document.title,window.location.pathname);
+    if(params.get("error") || hash.get("error")){
+      throw new Error("Lien invalide ou expiré. Demandez un nouveau lien depuis NVS.");
     }
-
-    if(window.location.hash){
-      const hash=new URLSearchParams(window.location.hash.substring(1));
-      const access_token=hash.get("access_token");
-      const refresh_token=hash.get("refresh_token");
-
-      if(access_token && refresh_token){
-        const {error}=await client.auth.setSession({
-          access_token,
-          refresh_token
-        });
-        if(error) throw error;
-
-        history.replaceState({},document.title,window.location.pathname);
+    let result;
+    const type=params.get("type") || hash.get("type");
+    if(params.get("token_hash") && type==="recovery"){
+      result=await client.auth.verifyOtp({token_hash:params.get("token_hash"),type:"recovery"});
+    }else if(params.get("code")){
+      result=await client.auth.exchangeCodeForSession(params.get("code"));
+      if(result.error){
+        throw new Error("Ce lien ne peut pas être vérifié dans ce navigateur. Demandez un nouveau lien depuis la version corrigée de NVS.");
       }
+    }else if(hash.get("access_token") && hash.get("refresh_token") && type==="recovery"){
+      result=await client.auth.setSession({access_token:hash.get("access_token"),refresh_token:hash.get("refresh_token")});
+    }else{
+      throw new Error("Lien de récupération absent ou incomplet. Ouvrez le lien reçu par e-mail ou demandez-en un nouveau depuis NVS.");
     }
-
-    const {data,error}=await client.auth.getSession();
-    if(error) throw error;
-
-    if(!data.session){
-      throw new Error("Aucune session de récupération.");
+    if(result.error || !result.data?.session){
+      throw new Error("Lien invalide ou expiré. Demandez un nouveau lien depuis NVS.");
     }
-
+    recoveryReady=true;
     form.style.display="block";
     message("Lien vérifié. Choisissez votre nouveau mot de passe.","info");
-
   }catch(e){
     form.style.display="none";
-    message("Lien invalide ou expiré. Demandez un nouveau lien depuis NVS.","error");
+    message(e.message || "Vérification impossible. Réessayez avec un nouveau lien depuis NVS.","error");
   }
 }
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
+  if(!recoveryReady || button.disabled) return;
 
   if(pass.value.length<6){
     message("Le mot de passe doit contenir au moins 6 caractères.","error");
@@ -105,18 +100,21 @@ form.addEventListener("submit",async(e)=>{
   button.disabled=true;
   button.textContent="Modification...";
 
-  const {error}=await client.auth.updateUser({password:pass.value});
-
-  if(error){
-    message("Impossible de modifier le mot de passe : "+error.message,"error");
+  try{
+    const {error}=await client.auth.updateUser({password:pass.value});
+    if(error) throw error;
+    recoveryReady=false;
+    form.style.display="none";
+    pass.value="";
+    confirmPass.value="";
+    message("Mot de passe modifié avec succès. Vous pouvez maintenant retourner dans NVS et vous connecter.","success");
+    // La déconnexion concerne uniquement cette session de récupération.
+    try{ await client.auth.signOut({scope:"local"}); }catch(_){}
+  }catch(e){
+    message("Impossible de modifier le mot de passe. Vérifiez votre connexion et réessayez.","error");
     button.disabled=false;
     button.textContent="Modifier mon mot de passe";
-    return;
   }
-
-  await client.auth.signOut();
-  form.style.display="none";
-  message("Mot de passe modifié avec succès. Vous pouvez maintenant retourner dans NVS et vous connecter.","success");
 });
 
 init();
